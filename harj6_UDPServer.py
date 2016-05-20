@@ -7,7 +7,7 @@
 
 import socket
 
-
+# testi
 HOST = '127.0.0.1'
 PORT = 24001
 size = 1024
