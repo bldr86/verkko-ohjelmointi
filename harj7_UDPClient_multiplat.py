@@ -32,7 +32,7 @@ s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 name = raw_input('Name:')
 
 if sys.platform == 'linux' or sys.platform == 'linux2' or sys.platform == 'darwin':
-    while input != 'QUIT':
+    while True:
 
         try:
             s.settimeout(2)
