@@ -5,6 +5,7 @@
 # lähettää viestin, sekä tulostaa palvelimen vastauksen
 # ruudulle.
 import socket
+# TODO turha?
 
 HOST = '127.0.0.1'
 PORT = 24000
