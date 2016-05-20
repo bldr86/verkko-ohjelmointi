@@ -1,9 +1,9 @@
 #!/usr/bin/python
 # -*- coding: UTF-8 -*-
 
-# Skripti joka luo soketilla yhteyden web-palvelimeen,
-# noutaa sieltä sivun ja tulostaa noudetun tavaran
-# ruudulle ilman HTTP-headeria.
+# Skripti joka luo soketilla yhteyden palvelimeen,
+# lähettää viestin, sekä tulostaa palvelimen vastauksen
+# ruudulle.
 import socket
 
 HOST = '127.0.0.1'

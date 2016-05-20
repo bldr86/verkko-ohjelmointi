@@ -2,7 +2,10 @@
 # -*- coding: UTF-8 -*-
 
 # Yksinkertainen SMTP-asiakas
-# Osaa käyttää HELO ja QUIT komentoja
+# Osaa käyttää HELO, QUIT, MAIL FROM, RCPT TO,
+# ja DATA komentoja sekä tulkita palvelimen
+# vastauksia.
+
 import socket
 
 HOST = '127.0.0.1'
