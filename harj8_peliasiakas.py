@@ -45,6 +45,28 @@ def game(server):
     s.sendto('DATA;' + number, server)
     return
 
+def checkmessage(message, server):
+    print message[1]
+    code = message[1][0:message[1].find(' ')]
+    print code
+    if code == '201':
+        return
+    elif code == '202':
+        game(server)
+    elif code == '203':
+        return
+    elif code == '300':
+        ack('data')
+        return
+    else:
+        print 'error'
+        return
+
+def wait():
+    pass
+
+def ack():
+    pass
 
 
 join((HOST, PORT))
@@ -60,17 +82,19 @@ if sys.platform == 'linux' or sys.platform == 'linux2' or sys.platform == 'darwi
             if recv_data:
                 message.append(recv_data[0:recv_data.find(';')])
                 message.append(recv_data[recv_data.find(';') + 1:])
-                #sys.stdout.write(recv_data[0:recv_data.find(';')] + ': ' +
-                                 #recv_data[recv_data.find(';') + 1:])
+
                 print message
-                game((HOST, PORT))
+                checkmessage(message, (HOST, PORT))
+                #game((HOST, PORT))
 
         except socket.timeout:
             pass
 
+
+        # TODO: Tän käsittely aliohjelmiin, ei toimi muuten
         input = getLine()
         if input != False:
-                s.sendto(name + ';' + input, (HOST, PORT))
+                s.sendto(int(input), (HOST, PORT))
 
 # Jos käyttöjärjestelmänä windows
 else:
