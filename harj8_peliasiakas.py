@@ -26,8 +26,9 @@ name = ''
 message = []
 s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
+
 # Read a line. Using select for non blocking reading of sys.stdin
-def getLine():
+def getline():
     i,o,e = select.select([sys.stdin],[],[],0.0001)
     for s in i:
         if s == sys.stdin:
@@ -35,15 +36,18 @@ def getLine():
             return input
     return False
 
+
 def join(server):
     name = raw_input('Name:')
     s.sendto('JOIN;' + name, server)
     return
 
+
 def game(server):
     number = raw_input('Valitse numero:')
     s.sendto('DATA;' + number, server)
     return
+
 
 def checkmessage(message, server):
     print message[1]
@@ -65,7 +69,7 @@ def checkmessage(message, server):
 def wait():
     pass
 
-def ack():
+def ack(type):
     pass
 
 
@@ -92,7 +96,7 @@ if sys.platform == 'linux' or sys.platform == 'linux2' or sys.platform == 'darwi
 
 
         # TODO: Tän käsittely aliohjelmiin, ei toimi muuten
-        input = getLine()
+        input = getline()
         if input != False:
                 s.sendto(int(input), (HOST, PORT))
 
