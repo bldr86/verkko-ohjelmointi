@@ -11,6 +11,8 @@
 # TODO: Peruskommunikaatio
 # TODO: JOIN -tila
 # TODO: GAME -tila
+# TODO: ACK -käsittely
+# TODO: viestin kuuntelu ja käsittely ennen reagointia
 
 import socket
 import sys, select
@@ -21,28 +23,31 @@ HOST = '127.0.0.1'
 PORT = 24001
 size = 1024
 name = ''
+message = []
+s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
 # Read a line. Using select for non blocking reading of sys.stdin
 def getLine():
     i,o,e = select.select([sys.stdin],[],[],0.0001)
-
     for s in i:
         if s == sys.stdin:
             input = sys.stdin.readline()
             return input
     return False
 
-def join():
+def join(server):
     name = raw_input('Name:')
+    s.sendto('JOIN;' + name, server)
     return
 
-def game():
-    pass
+def game(server):
+    number = raw_input('Valitse numero:')
+    s.sendto('DATA;' + number, server)
+    return
 
 
 
-s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-
+join((HOST, PORT))
 
 
 # Jos käyttöjärjestelmänä Linux tai OSX
@@ -53,8 +58,12 @@ if sys.platform == 'linux' or sys.platform == 'linux2' or sys.platform == 'darwi
             s.settimeout(2)
             recv_data, addr = s.recvfrom(size)
             if recv_data:
-                sys.stdout.write(recv_data[0:recv_data.find(';')] + ': ' +
-                                 recv_data[recv_data.find(';') + 1:])
+                message.append(recv_data[0:recv_data.find(';')])
+                message.append(recv_data[recv_data.find(';') + 1:])
+                #sys.stdout.write(recv_data[0:recv_data.find(';')] + ': ' +
+                                 #recv_data[recv_data.find(';') + 1:])
+                print message
+                game((HOST, PORT))
 
         except socket.timeout:
             pass
