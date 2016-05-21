@@ -2,7 +2,7 @@
 
 ## Harjoitus 1: HTTP asiakas, TCP palvelin ja TCP asiakas 
 
-harj1.py: Yksinkertainen HTTP-asiakas
+harj1.py: Yksinkertainen HTTP-asiakas.
 harj2_server.py: TCP palvelin joka kaiuttaa asiakkaan lähettämän tekstin takaisin, sillä muutoksella että palvelin lisää tekstin eteen nimen (laita oma nimesi) joka on erotettu ; -merkillä kaiutettavasta tekstistä.
 harj3_client.py: TCP asiakas joka lähettää yhden teksti string:in palvelimelle ja joka vastaanottaa palvelimen kaiuttaman viestin sekä osaa erottaa nimen ja tekstin toisistaan ja tulostaa ne erillisenä näyttöön.
 
