@@ -117,4 +117,3 @@ if sys.platform == 'linux' or sys.platform == 'linux2' or sys.platform == 'darwi
             pass
 
 
-        # TODO: Tän käsittely aliohjelmiin, ei toimi muuten
