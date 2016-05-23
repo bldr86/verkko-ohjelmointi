@@ -55,9 +55,29 @@ def checkmessage(message, server):
     else:
         if code[0:1] == '4':
             print 'Error: ' + code + status
+            checkerrors(code, server)
             return
 
-
+def checkerrors(code, server):
+    if code == '400':
+        print 'Määrittelemätön virhe, ohjelma suljetaan.'
+        sys.exit('400')
+    elif code == '401':
+        print 'Peliin liittyminen ei onnistu, yritä myöhemmin uudelleen'
+        sys.exit('401')
+    elif code == '402':
+        print 'Vastustajan vuoro, odota hetki'
+        return
+    elif code == '403':
+        print 'Virheellinen ACK viesti, aja ohjelma uusiksi mikäli tämä toistuu'
+        return
+    elif code == '404':
+        print 'Väärä kehysrakenne'
+        return
+    elif code == '407':
+        print 'Arvaus ei ollut numero, yritä uudelleen'
+        data(server)
+    return
 
 def ack(code, server):
     s.sendto('ACK;' + code, server)
