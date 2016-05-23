@@ -89,6 +89,7 @@ if sys.platform == 'linux' or sys.platform == 'linux2' or sys.platform == 'darwi
 
                 print message
                 checkmessage(message, (HOST, PORT))
+                message = []
                 #game((HOST, PORT))
 
         except socket.timeout:
