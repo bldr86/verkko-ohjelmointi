@@ -8,7 +8,11 @@
 # ja ilmoittaa voittajan
 
 
-# TODO: Peli jää jumiin jos kumpikaan ei arvaa ensimmäisellä kierroksella oikein
+# TODO: Peruskommunikaatio
+# TODO: JOIN -tila
+# TODO: GAME -tila
+# TODO: ACK -käsittely
+# TODO: viestin kuuntelu ja käsittely ennen reagointia
 
 import socket
 import sys, select
@@ -21,7 +25,7 @@ size = 1024
 name = ''
 message = []
 s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-datagiven = False
+
 
 # Read a line. Using select for non blocking reading of sys.stdin
 def getline():
@@ -32,53 +36,54 @@ def getline():
             return input
     return False
 
-def checkmessage(message, server):
-    print message[0]
-    status = message[0]
-    code = message[1][0:message[1].find(' ')]
-    print code
-    global datagiven
-    if status == 'QUIT':
-    # ack('500', server)
-        s.sendto('ACK;500'.rstrip(), server)
-        sys.exit(1)
-    elif status == 'ACK':
-        if code == '300':
-            ack(code, server)
-        elif status == 'ACK' and code == '202':
-            data(server)
-        elif status == '203':
-            return
-    elif status == 'DATA':
-        if datagiven:
-            ack('300', server)
-        else:
-            data(server)
-        return
-    else:
-        if code[0:1] == '4':
-            print 'Error: ' + code + status
-            return
-
-
-
-def ack(code, server):
-    s.sendto('ACK;' + code, server)
-    return
-
-def data(server):
-    input = raw_input('Anna numero> ')
-    global datagiven
-    datagiven = True
-    s.sendto('DATA;' + input.rstrip(), server)
-    return
 
 def join(server):
-    input = raw_input('Anna nimesi> ')
-    s.sendto('JOIN;' + input.rstrip(), server)
+    name = raw_input('Name:')
+    s.sendto('JOIN;' + name, server)
     return
 
+
+def game(server):
+    number = raw_input('Valitse numero:')
+    s.sendto('DATA;' + int(number), server)
+    return
+
+def getinput(message, state, server):
+    input = raw_input(message + '> ')
+    if state == '202':
+        senddata(input, server)
+    return
+
+def senddata(message, server):
+    pass
+
+
+def checkmessage(message, server):
+    print message[0]
+    code = message[0][0:message[1].find(' ')]
+    print code
+    if code == '201':
+        return
+    elif code == '202':
+        game(server)
+    elif code == '203':
+        return
+    elif code == '300':
+        ack('data')
+        return
+    else:
+        print 'error'
+        return
+
+def wait():
+    pass
+
+def ack(type):
+    pass
+
+
 join((HOST, PORT))
+
 
 # Jos käyttöjärjestelmänä Linux tai OSX
 if sys.platform == 'linux' or sys.platform == 'linux2' or sys.platform == 'darwin':
@@ -103,7 +108,18 @@ if sys.platform == 'linux' or sys.platform == 'linux2' or sys.platform == 'darwi
         # TODO: Tän käsittely aliohjelmiin, ei toimi muuten
         '''input = getline()
         if input != False:
-
-                s.sendto(input.rstrip(), (HOST, PORT))
+                s.sendto(input, (HOST, PORT))
 '''
-
+# Jos käyttöjärjestelmänä windows
+else:
+    while True:
+        ready = select.select([s], [], [], 0.001)
+        if ready[0]:
+            recv_data = s.recv(size)
+            sys.stdout.write(recv_data[0:recv_data.find(';')] + ': ' +
+                             recv_data[recv_data.find(';') + 1:] + '\n')
+        else:
+            if msvcrt.kbhit():
+                char = msvcrt.getch()
+                if char == "\r":
+                    s.sendto(name + ';' + raw_input(">"), (HOST, PORT))
