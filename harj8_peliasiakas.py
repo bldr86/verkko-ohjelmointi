@@ -8,12 +8,11 @@
 # ja ilmoittaa voittajan
 
 
-# TODO: Peli jää jumiin jos kumpikaan ei arvaa ensimmäisellä kierroksella oikein
+# TODO: Virheenkäsittely
 
 import socket
-import sys, select
-if sys.platform == 'win32':
-    import msvcrt
+import sys
+
 
 HOST = '127.0.0.1'
 PORT = 24001
@@ -22,15 +21,9 @@ name = ''
 message = []
 s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 datagiven = False
+gameover = False
 
-# Read a line. Using select for non blocking reading of sys.stdin
-def getline():
-    i,o,e = select.select([sys.stdin],[],[],0.0001)
-    for s in i:
-        if s == sys.stdin:
-            input = sys.stdin.readline()
-            return input
-    return False
+
 
 def checkmessage(message, server):
     print message[0]
@@ -38,9 +31,11 @@ def checkmessage(message, server):
     code = message[1][0:message[1].find(' ')]
     print code
     global datagiven
+    global gameover
     if status == 'QUIT':
     # ack('500', server)
         s.sendto('ACK;500'.rstrip(), server)
+        gameover = True
         sys.exit(1)
     elif status == 'ACK':
         if code == '300':
@@ -52,6 +47,8 @@ def checkmessage(message, server):
     elif status == 'DATA':
         if datagiven:
             ack('300', server)
+            if not gameover:
+                data(server)
         else:
             data(server)
         return
@@ -82,7 +79,7 @@ join((HOST, PORT))
 
 # Jos käyttöjärjestelmänä Linux tai OSX
 if sys.platform == 'linux' or sys.platform == 'linux2' or sys.platform == 'darwin':
-    while True:
+    while not gameover:
 
         try:
             s.settimeout(2)
@@ -101,9 +98,3 @@ if sys.platform == 'linux' or sys.platform == 'linux2' or sys.platform == 'darwi
 
 
         # TODO: Tän käsittely aliohjelmiin, ei toimi muuten
-        '''input = getline()
-        if input != False:
-
-                s.sendto(input.rstrip(), (HOST, PORT))
-'''
-
