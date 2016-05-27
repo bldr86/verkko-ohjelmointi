@@ -7,14 +7,14 @@
 
 import socket
 
-# testi
+
 HOST = '127.0.0.1'
 PORT = 24001
 size = 1024
 connections = []
 s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 s.bind((HOST,PORT))
-#connections = [(,)]
+
 
 while True:
     print "UDP Server listening"
@@ -32,6 +32,6 @@ while True:
             except TypeError:
                 print 'No data to send'
         data = None
-   # s.sendto(recv_data, addr)
+
 
 s.close()

@@ -31,8 +31,7 @@ def sendmail():
         line = getdata()
         print line
         if getcode(data) == '250':
-            #line = getdata()
-            #print line
+
             userinput = raw_input("Subject: ")
             message = userinput + '\r\n\r\n'
             userinput = raw_input("Message: ")
@@ -85,4 +84,3 @@ start()
 
 s.close()
 
-#print data[0:data.find(';')] + "\n" + data[data.find(';')+1:]

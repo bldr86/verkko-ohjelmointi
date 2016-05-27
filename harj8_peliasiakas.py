@@ -38,23 +38,21 @@ def checkmessage(message, server):
         sys.exit(1)
 
     elif status == 'ACK':
-        if code == '300':
-            ack(code, server)
-
-        elif status == 'ACK' and code == '202':
+        if code == '202':
             data(server)
 
-        elif status == '203':
+        elif code == '203' or code == '300':
             return
 
     elif status == 'DATA':
         if datagiven:
-            ack('300', server)
+            ack('300'.rstrip(), server)
 
             if not gameover:
                 data(server)
 
         else:
+            ack('300'.rstrip(), server)
             data(server)
         return
 
