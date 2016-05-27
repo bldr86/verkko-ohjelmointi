@@ -8,7 +8,6 @@
 # ja ilmoittaa voittajan
 
 
-# TODO: Virheenkäsittely
 
 import socket
 import sys
@@ -34,7 +33,6 @@ def checkmessage(message, server):
     global gameover
 
     if status == 'QUIT':
-    # ack('500', server)
         s.sendto('ACK;500'.rstrip(), server)
         gameover = True
         sys.exit(1)
@@ -105,23 +103,22 @@ def join(server):
 
 join((HOST, PORT))
 
-# Jos käyttöjärjestelmänä Linux tai OSX
-if sys.platform == 'linux' or sys.platform == 'linux2' or sys.platform == 'darwin':
-    while not gameover:
 
-        try:
-            s.settimeout(2)
-            recv_data, addr = s.recvfrom(size)
-            if recv_data:
-                message.append(recv_data[0:recv_data.find(';')])
-                message.append(recv_data[recv_data.find(';') + 1:])
 
-                print message
-                checkmessage(message, (HOST, PORT))
-                message = []
-                #game((HOST, PORT))
+while not gameover:
 
-        except socket.timeout:
-            pass
+    try:
+        s.settimeout(2)
+        recv_data, addr = s.recvfrom(size)
+        if recv_data:
+            message.append(recv_data[0:recv_data.find(';')])
+            message.append(recv_data[recv_data.find(';') + 1:])
+
+            print message
+            checkmessage(message, (HOST, PORT))
+            message = []
+
+    except socket.timeout:
+        pass
 
 

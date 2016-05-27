@@ -13,4 +13,13 @@
 ## Harjoitus 3: UDP Chat asiakas ja palvelin
 
 - harj6_UDPServer.py: UDP palvelin joka kaiuttaa asiakkaan lähettämän tekstin kaikille asiakkaille jotka ovat palvelimelle paketin lähettäneet ennen ko. asiakasta.
-- harj7_UDPClient_multiplat.py: Chat-asiakas joka toimii windowsilla ja unix-pohjaisissa. Pystyy vastaanottamaan ja lähettämään viestejä
+- harj7_UDPClient_multiplat.py: Chat-asiakas joka toimii windowsilla ja unix-pohjaisissa. Pystyy vastaanottamaan ja lähettämään viestejä.
+
+## Harjoitus 4: Peliprotokollan asiakas
+
+- harj8_peliasiakas.py: Ottaa yhteyden UDP:llä pelipalvelimeen. Pelin tarkoituksena on arvata oikea numero moninpelissä, missä palvelin arpoo numeron ja ilmoittaa voittajan
+
+## Harjoitus 5: Peliprotokollan palvelin - EI VALMIS VIELÄ
+
+- harj10_pelipalvelin.py: Osaa tällä hetkellä käsitellä asiakkaiden join viestit ja kuitata ACK 201, 202 ja 203
+
