@@ -28,19 +28,23 @@ STATE = "WAIT"
 quitack = 0
 numero = -1
 on = True
+guess = -1
 
 def getjoin(addr, connections, data):
-    global players
-    global names
-    if players < 3:
-        connections.append((addr[0],addr[1]))
-        players+=1
-        names.append(data[data.find(';') + 1:])
-        if len(connections) == 1:
-            send('ACK;201', addr, connections)
+    if addr != '':
+        global players
+        global names
+        if players < 3:
+            connections.append((addr[0],addr[1]))
+            players+=1
+            names.append(data[data.find(';') + 1:])
+            if len(connections) == 1:
+                send('ACK;201', addr, connections)
+        else:
+            send('405;Liikaa pelaajia', addr)
+        return
     else:
-        send('405;Liikaa pelaajia', addr)
-    return
+        return
 
 def send(data, connection, connections):
     if connection in connections:
@@ -76,6 +80,7 @@ def startgame(connections):
 def game(addr, connections, data, state):
     global playerturn
     global numero
+    global guess
     guess = data[data.find(';') + 1:]
     if connections[playerturn] == (addr[0],addr[1]):
         if RepresentsInt(guess):
@@ -86,13 +91,32 @@ def game(addr, connections, data, state):
                     send('QUIT;501', connections[playerturn], connections)
                     send('QUIT;502', connections[flip(playerturn)], connections)
                     state = 'QUIT'
+                else:
+                    send('DATA;' + guess, connections[flip(playerturn)], connections)
+                    state = 'WAIT_ACK'
 
     else:
         send('ACK;402 Väärä vuoro', connections[flip(playerturn)], connections)
     return state
 
+def wait_ack(connections, state, data):
+    global guess
 def wait_ack(guess, connections):
     global playerturn
+    if data[:data.find(';')] == 'ACK':
+        if data[data.find(';') + 1:] == '300':
+            playerturn = flip(playerturn)
+            state = 'GAME'
+            return state
+        else:
+            send('ACK;403 Virheellinen ACK', connections[playerturn], connections)
+            STATE = 'WAIT_ACK'
+            return state
+    else:
+        send('ACK;403 Virheellinen ACK', connections[playerturn], connections)
+        STATE = 'WAIT_ACK'
+        return state
+
     send('DATA;' + guess, connections[flip(playerturn)], connections)
 
 def RepresentsInt(s):
@@ -110,11 +134,18 @@ def flip(i):
 
 
 while on:
-    print "UDP Server listening"
+    #print "UDP Server listening"
+    recv_data = ''
+    addr = ''
+    data = ''
     try:
         s.settimeout(2)
         recv_data, addr = s.recvfrom(size)
         print recv_data
+
+    except socket.timeout:
+        recv_data = ''
+
         if recv_data != '':
             data = recv_data
             recv_data = None
@@ -122,25 +153,25 @@ while on:
         if STATE == 'WAIT':
             print 'STATE: ' + STATE
             if players < 2:
-                if addr not in connections:
+                if addr not in connections and addr != '':
                     getjoin(addr, connections, data)
             if players == 2:
-                STATE == 'GAME'
+                STATE = 'GAME'
                 connections = startgame(connections)
         elif STATE == 'GAME':
             print 'STATE: ' + STATE
             STATE = game(addr, connections, data, STATE)
-            break
+
         elif STATE == 'WAIT_ACK':
             print 'STATE: ' + STATE
-            break
+            STATE = wait_ack(connections, STATE, data)
+
         elif STATE == 'END':
             print 'STATE: ' + STATE
             break
         else:
             break
-    except socket.timeout:
-        print
+
 
 
 
