@@ -4,21 +4,18 @@
 # UDP Pelipalvelin
 # Palvelee kahta asiakasta numeronarvauspelissä
 
-# TODO: testaa virheenkäsittely
-
-
 
 import socket
 import random
 
-# testi
+
 HOST = '127.0.0.1'
 PORT = 24001
 size = 1024
 connections = []
 s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 s.bind((HOST,PORT))
-#connections = [(,)]
+
 playerturn = 0
 players = 0
 names = []
@@ -50,8 +47,10 @@ def send(data, connection, connections):
             s.sendto(data, connection)
             print 'Sending ' + data + ' to ' + connection
         except TypeError:
-            print 'No data to send'
+            #print 'No data to send'
+            pass
         data = None
+
     else:
         print 'Connection not in connections'
     return data
@@ -87,15 +86,19 @@ def game(addr, connections, data, state):
                     send('ACK300;DATA OK', connections[playerturn], connections)
 
                     if int(guess) == numero:
-                        send('QUIT;501', connections[playerturn], connections)
-                        send('QUIT;502', connections[flip(playerturn)], connections)
+                        send('QUIT;501 Voitit pelin!', connections[playerturn], connections)
+                        send('QUIT;502 Vastustajasi voitti pelin.', connections[flip(playerturn)], connections)
                         state = 'END'
+                        return state
                     else:
                         send('DATA;' + guess, connections[flip(playerturn)], connections)
                         state = 'WAIT_ACK'
-
+                        return state
             else:
-                send('ACK;402 Väärä vuoro', connections[flip(playerturn)], connections)
+                send('ACK;407 Vastaus ei ollut numero', connections[playerturn], connections)
+                return state
+        else:
+            send('ACK;402 Vaara vuoro', connections[flip(playerturn)], connections)
             return state
     else:
         return state
@@ -111,13 +114,14 @@ def wait_ack(connections, state):
             return state
         else:
             send('ACK;403 Virheellinen ACK', connections[playerturn], connections)
-            STATE = 'WAIT_ACK'
+            state = 'WAIT_ACK'
             return state
     elif data[:data.find(';')] == 'ACK':
         send('ACK;404 Väärä kehysrakenne', connections[playerturn], connections)
         state = 'WAIT_ACK'
         return state
     else:
+        state = 'WAIT_ACK'
         return state
 
 
@@ -153,7 +157,6 @@ def flip(i):
 
 
 while on:
-    #print "UDP Server listening"
     recv_data = ''
     addr = ''
     data = ''
@@ -195,10 +198,5 @@ while on:
         pass
 
 
-
-
-
-
-   # s.sendto(recv_data, addr)
 
 s.close()
